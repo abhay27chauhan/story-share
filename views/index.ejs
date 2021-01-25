@@ -1,0 +1,58 @@
+<%- include('partials/header') %>
+
+    <nav class="grey darken-3">
+        <div class="nav-wrapper container">
+
+            <a href="#!" class="brand-logo center">StoryShare</a>
+            <a href="#" data-target="mobile-demo" class="sidenav-trigger show-on-large"><i class="fas fa-bars"></i></a>
+            <ul class="sidenav" id="mobile-demo">
+                <li><a href="/stories">Public Stories</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/auth/logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="fixed-action-btn">
+        <a href="/stories/add" class="btn-floating btn-large waves-effect waves-light red"><i
+                class="fas fa-plus"></i></a>
+    </div>
+    <div class="container">
+        <h1>Stories</h1>
+        <div class="row">
+            <% if(stories.length> 0){ %>
+                <% stories.forEach(function(story){ %>
+                    <div class="col s12 m4">
+                        <div class="card">
+                            <div class="card-image">
+                                <% if (story.user._id.toString() === user._id.toString()) { %>
+                                    <a href="/stories/edit/<%= story._id %>" class="btn-floating halfway-fab blue"><i class="fas fa-edit fa-small"></i></a>
+                                <% }%>
+                            </div>
+                            <div class="card-content center-align">
+                                <h5><%= story.title %></h5>
+                                <p><%= story.body.replace(/<(?:.|\n)*?>/gm, '').substring(0, 60) + '...' %></p>
+                                <br>
+                                <div class="chip">
+                                    <img src="<%= story.user.image %>" alt="">
+                                    <a href="/stories/user/<%= story.user._id%>"><%= story.user.displayName %></a>
+                                </div>
+                            </div>
+                            <div class="card-action center-align">
+                                <a href="/stories/<%= story._id%>" class="btn grey">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p>No stories to display</p>
+            <% }%>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <script>
+        M.Sidenav.init(document.querySelector('.sidenav'))
+    </script>
+
+    <%- include('partials/footer') %>

@@ -1,0 +1,68 @@
+<%- include('partials/header') %>
+
+<nav class="grey darken-3">
+    <div class="nav-wrapper container">
+
+        <a href="#!" class="brand-logo center">StoryShare</a>
+        <a href="#" data-target="mobile-demo" class="sidenav-trigger show-on-large"><i class="fas fa-bars"></i></a>
+        <ul class="sidenav" id="mobile-demo">
+            <li><a href="/stories">Public Stories</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/auth/logout">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="fixed-action-btn">
+    <a href="/stories/add" class="btn-floating btn-large waves-effect waves-light red"><i
+            class="fas fa-plus"></i></a>
+</div>
+<div class="container">
+    <h3>Edit Story</h3>
+    <div class="row">
+        <form action="/stories/<%= story._id %>" method="POST" class="col s12">
+            <input type="hidden" name="_method" value="PUT">
+            <div class="row">
+                <div class="input-field">
+                    <input type="text" id="title" name="title" value="<%= story.title %>">
+                    <label for="title">Title</label>
+                </div>
+            </div>
+    
+            <div class="row">
+                <div class="input-field">
+                    <select id="status" name="status">
+                        <option value="public" selected>Public</option>
+                        <option value="private">Private</option>
+                    </select>
+                    <label for="status">Status</label>
+                </div>
+            </div>
+    
+            <div class="row">
+                <div class="input-field">
+                    <h5>Tell Us Your Story:</h5>
+                    <textarea id="body" name="body"><%= story.body %></textarea>
+                </div>
+            </div>
+    
+            <div class="row">
+                <input type="submit" value="Save" class="btn">
+                <a href="/dashboard" class="btn orange">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.14.1/ckeditor.js"
+    integrity="sha256-bEIQpI72w9NJuIVhTLFUF2/8uxl0u5800r8ddViuv+o=" crossorigin="anonymous"></script>
+
+<script>
+    M.Sidenav.init(document.querySelector('.sidenav'))
+    M.FormSelect.init(document.querySelector('#status'))
+    CKEDITOR.replace('body', {
+        plugins: 'wysiwygarea, toolbar, basicstyles, link',
+    })
+</script>
+
+<%- include('partials/footer') %>
