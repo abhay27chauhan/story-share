@@ -2,6 +2,7 @@ require('dotenv').config({path: './config/config.env'})
 const express = require("express")
 const bodyParser = require("body-parser")
 const mongoose = require("mongoose")
+const methodOverride = require('method-override')
 const connectDB = require('./config/db')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')(session)
@@ -18,6 +19,16 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
   extended: true
 }));
+
+// method-override
+app.use(methodOverride(function (req, res) {
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    // look in urlencoded POST bodies and delete it
+    let method = req.body._method
+    delete req.body._method
+    return method
+  }
+}))
 
 // express-session
 app.use(session({
@@ -60,8 +71,6 @@ app.get("/dashboard", function(req, res){
         console.log(err)
         res.render('500')
     }else{ 
-        // console.log("First function call : ", stories); 
-        
         if (req.isAuthenticated()){
           res.render("dashboard", {name: req.user.firstName, stories});
         } else {
@@ -127,6 +136,10 @@ app.get("/stories/edit/:id", function(req, res){
   }); 
 })
 
+app.get("/stories/:id", function(req, res){
+
+})
+
 app.post("/stories", function(req, res){
   if(req.isAuthenticated()){
     req.body.user = req.user._id;
@@ -141,6 +154,62 @@ app.post("/stories", function(req, res){
   } else {
     res.redirect("/");
   }
+})
+
+app.put("/stories/:id", function(req, res){
+  Story.findOne({_id: req.params.id}, function (err, story) { 
+      if (err){ 
+        console.log(err)
+        res.render('500') 
+      }else{ 
+        if (!story) {
+          return res.render('404')
+        }else if(story.user != req.user.id){
+          if (req.isAuthenticated()){
+            res.redirect('/stories')
+          } else {
+            res.redirect("/");
+          }
+        }else{
+          Story.findOneAndUpdate({_id: req.params.id}, req.body, { new: true,runValidators: true },function (err, story) { 
+            if (req.isAuthenticated()){
+              res.redirect('/dashboard')
+            } else {
+              res.redirect("/");
+            }
+          })
+        }
+      } 
+  });
+})
+
+app.delete("/stories/:id", function(req, res){
+  Story.findById(req.params.id, function(err, story){
+    if (err){ 
+      console.log(err)
+      res.render('500') 
+    }else{ 
+      if (!story) {
+        return res.render('404')
+      }else if(story.user != req.user.id){
+        if (req.isAuthenticated()){
+          res.redirect('/stories')
+        } else {
+          res.redirect("/");
+        }
+      }else{
+        Story.remove({_id: req.params.id}, function (err, story) { 
+          if(!err){
+            if (req.isAuthenticated()){
+              res.redirect('/dashboard')
+            } else {
+              res.redirect("/");
+            }
+          }
+        })
+      }
+    } 
+  })
 })
 
 app.listen(PORT, () => {

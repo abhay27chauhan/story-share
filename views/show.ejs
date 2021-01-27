@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+
+    <nav class="grey darken-3">
+        <div class="nav-wrapper container">
+
+            <a href="#!" class="brand-logo center">StoryShare</a>
+            <a href="#" data-target="mobile-demo" class="sidenav-trigger show-on-large"><i class="fas fa-bars"></i></a>
+            <ul class="sidenav" id="mobile-demo">
+                <li><a href="/stories">Public Stories</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/auth/logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="fixed-action-btn">
+        <a href="/stories/add" class="btn-floating btn-large waves-effect waves-light red"><i
+                class="fas fa-plus"></i></a>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m8">
+                <h3>{{story.title}}
+                    <small>{{{editIcon story.user user story._id false}}}</small>
+                </h3>
+                <div class="card story">
+                    <div class="card-content">
+                        <span class="card-title">{{formatDate date 'MMMM Do YYYY, h:mm:ss a'}}</span>
+                        {{{story.body}}}
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m4">
+                <div class="card center-align">
+                    <div class="card-content">
+                        <span class="card-title">{{story.user.displayName}}</span>
+                        <img src="{{story.user.image}}" class="circle responsive-img img-small">
+                    </div>
+                    <div class="card-action">
+                        <a href="/stories/user/{{story.user._id}}">More From {{story.user.firstName}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <script>
+        M.Sidenav.init(document.querySelector('.sidenav'))
+    </script>
+
+    <%- include('partials/footer') %>
