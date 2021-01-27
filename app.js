@@ -137,7 +137,31 @@ app.get("/stories/edit/:id", function(req, res){
 })
 
 app.get("/stories/:id", function(req, res){
-
+  Story.findById(req.params.id).
+  populate('user').
+  exec(function(err, story){
+    if(err){
+      console.log(err)
+      res.render("500")
+    }else{
+      if (!story) {
+        res.render('404')
+      }else if(story.user != req.user.id && story.status == 'private'){
+        if (req.isAuthenticated()){
+          res.redirect('/stories')
+        } else {
+          res.redirect("/");
+        }
+      }else{
+        if (req.isAuthenticated()){
+          res.render("show", { story, user: req.user})
+        } else {
+          res.redirect("/");
+        }
+      }
+    }
+  })
+  
 })
 
 app.post("/stories", function(req, res){
@@ -163,7 +187,7 @@ app.put("/stories/:id", function(req, res){
         res.render('500') 
       }else{ 
         if (!story) {
-          return res.render('404')
+          res.render('404')
         }else if(story.user != req.user.id){
           if (req.isAuthenticated()){
             res.redirect('/stories')
@@ -190,7 +214,7 @@ app.delete("/stories/:id", function(req, res){
       res.render('500') 
     }else{ 
       if (!story) {
-        return res.render('404')
+        res.render('404')
       }else if(story.user != req.user.id){
         if (req.isAuthenticated()){
           res.redirect('/stories')
@@ -209,6 +233,23 @@ app.delete("/stories/:id", function(req, res){
         })
       }
     } 
+  })
+})
+
+app.get("/stories/user/:id", function(req, res){
+  Story.find({user: req.params.id, status: 'public'}).
+  populate('user').
+  exec(function(err, stories){
+    if(err){
+      console.log(err)
+      res.render('500')
+    }else{
+      if (req.isAuthenticated()){
+        res.render("index", { stories, user: req.user })
+      } else {
+        res.redirect("/");
+      }
+    }
   })
 })
 
