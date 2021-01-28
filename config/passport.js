@@ -1,13 +1,14 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const mongoose = require('mongoose');
-const User = require('../models/User')
+const User = require('../models/User');
+const keys = require('./keys');
 
 module.exports = function(passport){
     passport.use(new GoogleStrategy(
         {
-            clientID: "712568666779-s2aq8b0hv6msfpo7bfd75e8i18dde3a0.apps.googleusercontent.com",
-            clientSecret: "UDLg3yJWpgBWgRmlmEPTSQgQ",
-            callbackURL: "http://app-story-share.herokuapp.com/auth/google/callback"
+            clientID: keys.googleClientID,
+            clientSecret: keys.googleClientSecret,
+            callbackURL: "/auth/google/callback"
         },
         async (accessToken, refreshToken, profile, done) => {
             const newUser = {
